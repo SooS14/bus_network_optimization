@@ -654,7 +654,7 @@ print(" ")
 #Test semur sud est
 l_ligne = [(21.2, ['arnay-vitteaux', 'marigny', 'chassey', 'magny', 'souhey', 'juilly', 'semur']),
            (35.6, ['posanges', 'vitteaux', 'st-thibault', 'pont-royal', 'braux', 'charigny', 'villeneuve-charigny', 'st-euphrone', 'massene', 'semur']),
-           (29.0, ['noidan', 'normier', 'clamerey', 'marcigny', 'brianny', 'montigny-arman\xc3\xa7on', 'flee', 'allerey', 'pont-massene', 'semur']),
+           (29.0, ['noidan', 'normier', 'clamerey', 'marcigny', 'brianny', 'montigny-armançon', 'flee', 'allerey', 'pont-massene', 'semur']),
            (32.9, ['motte-ternant', 'chausseroze', 'fontagny', 'chazelle', 'pluvier', 'nan-sous-thil', 'thil', 'roilly', 'flee', 'allerey', 'pont-massene', 'semur'])]
 bus,nouveau_graph_poids = nombre_bus_tot(semur_sud_est_poids,l_ligne)
 eleves_restant,t =test_eleves_restant(nouveau_graph_poids)
