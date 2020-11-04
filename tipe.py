@@ -28,9 +28,7 @@ def Floyd(graph):
                     graph[i][j] = graph[i][k] + graph[k][j]
     return(graph)
 
-#On donne le sommet de départ, d'arrivé et le graphe orienté, pondéré (en liste d'adjacence)
-#L'algorithme renvoie la liste des sommets du plus court chemin du depart à l'arrivée
-#(avec la distance). 
+
 def dijkstra(graph,depart,arrivee):
     #Initialisation :
     predecesseur = {}
@@ -81,6 +79,7 @@ def dijkstra(graph,depart,arrivee):
     if dist_min[arrivee] != inf:
         chemin = [depart] + chemin
         return(dist_min[arrivee],chemin)
+
 
 
 #On privilégie l'algorithme de Dijkstra pour une question de complexité
@@ -418,7 +417,7 @@ def nombre_bus_tot(graph_poids,list_ligne):
     for j in list_ligne :
     #Pour chaque ligne :
         t = 0
-        longeur,ligne = j
+        longueur,ligne = j
         for i in ligne:
         #Pour chaque sommet de la ligne on récupère le nombre d'élève
             nb_eleves = copy_graph[i]['poids']
@@ -426,9 +425,9 @@ def nombre_bus_tot(graph_poids,list_ligne):
             t = t + nb_eleves
         #On considère que les bus ont 50 places
         if t%50 != 0:
-            bus.append((t//50+1,t%50,ligne))
+            bus.append((t//50+1,t%50,longueur,ligne))
         else:
-            bus.append((t/50,t%50,ligne))
+            bus.append((t/50,t%50,longueur,ligne))
     #On renvoie le nombre de bus, le remplissage du dernier bus et le graph (pour savoir si il
     #a été correctement "vidé"
     return(bus,copy_graph)
@@ -448,69 +447,43 @@ def test_eleves_restant(graph):
             t = graph[i]['poids'] + t
             eleves_restant.append((i,graph[i]['poids']))
     return(eleves_restant,t)
-            
+
+
+def affiche_res(graph_poids,l_ligne) :
+    bus,nouveau_graph_poids = nombre_bus_tot(graph_poids,l_ligne)
+    eleves_restant,t = test_eleves_restant(nouveau_graph_poids)
+    total_eleves = total_eleves_graph(semur_nord_est_poids)
+
+    print("### nombre bus, eleves dernier bus, longueur ligne, ligne \n")
+    for ligne_bus in bus :
+        print("# ",ligne_bus)
+        
+    print("eleves_restant :", eleves_restant, "; il reste :", t, "eleves sur", total_eleves, "au total")
+    print(" ")
+    print(" ")    
+
+
+print("\n\n###########Premier Traitement###########\n")
 
 #test semur_nord_est
 l_ligne = creation_lignes(semur_nord_est,['montbard','fresnes','ampilly','laperriere','verrey','pouillenay'],'semur')
-bus,nouveau_graph_poids = nombre_bus_tot(semur_nord_est_poids,l_ligne)
-eleves_restant,t = test_eleves_restant(nouveau_graph_poids)
-total_eleves = total_eleves_graph(semur_nord_est_poids)
-print(l_ligne)
-print(" ")
-print(bus)
-print(" ")
-print(nouveau_graph_poids)
-print(" ")
-print(eleves_restant,t,total_eleves)
-print(" ")
-print(" ")
+affiche_res(semur_nord_est_poids,l_ligne)
+
 
 #test semur_nord_ouest
 l_ligne = creation_lignes(semur_nord_ouest,['st-remy','st-just','tivauche','bard-epoisses','toutry','vieux-chateau'],'semur')
-bus,nouveau_graph_poids = nombre_bus_tot(semur_nord_ouest_poids,l_ligne)
-eleves_restant,t =test_eleves_restant(nouveau_graph_poids)
-total_eleves = total_eleves_graph(semur_nord_ouest_poids)
-print(l_ligne)
-print(" ")
-print(bus)
-print(" ")
-print(nouveau_graph_poids)
-print(" ")
-print(eleves_restant,t,total_eleves)
-print(" ")
-print(" ")
+affiche_res(semur_nord_ouest_poids,l_ligne)
 
 
 #test semur_sud_ouest
 l_ligne = creation_lignes(semur_sud_ouest,['forleans','st-germain','chanteau','saulieu','arcenay','vic-thil'],'semur')
-bus,nouveau_graph_poids = nombre_bus_tot(semur_sud_ouest_poids,l_ligne)
-eleves_restant,t =test_eleves_restant(nouveau_graph_poids)
-total_eleves = total_eleves_graph(semur_sud_ouest_poids)
-print(l_ligne)
-print(" ")
-print(bus)
-print(" ")
-print(nouveau_graph_poids)
-print(" ")
-print(eleves_restant,t,total_eleves)
-print(" ")
-print(" ")
+affiche_res(semur_sud_ouest_poids,l_ligne)
 
 
 #test semur_sud_est
 l_ligne = creation_lignes(semur_sud_est,['arnay-vitteaux','posanges','pouilly-auxois','noidan','motte-ternant'],'semur')
-bus,nouveau_graph_poids = nombre_bus_tot(semur_sud_est_poids,l_ligne)
-eleves_restant,t =test_eleves_restant(nouveau_graph_poids)
-total_eleves = total_eleves_graph(semur_sud_est_poids)
-print(l_ligne)
-print(" ")
-print(bus)
-print(" ")
-print(nouveau_graph_poids)
-print(" ")
-print(eleves_restant,t,total_eleves)
-print(" ")
-print(" ")
+affiche_res(semur_sud_est_poids, l_ligne)
+
 
 
 #A l'issue de ce premier traitement on obtient des lignes optimales en terme de distance
@@ -554,120 +527,81 @@ a = ligne_secondaire(semur_nord_est,
                       ['fresnes','seigny','grignon','lantilly','villars'],
                       'semur')
 
-#Semur sud est :
+#Semur nord est :
 #on supprime la ligne de source 'tivauche' et on l'utilise pour:
 b = ligne_secondaire(semur_nord_ouest,
                       ['tivauche','corsaint','corrombles','torcy'],
                       'semur')
 
-#Semur sud est :
-#On modifie la ligne de source 'Motte-Ternant':
-c1 = ligne_secondaire(semur_sud_est,
-                      ['motte-ternant','chausseroze','fontagny'],
-                      'semur')
-#On supprime la ligne de source 'Noidan' et on l'utilise pour:
-c2 = ligne_secondaire(semur_sud_est,
-                      ['noidan','clamerey','marcigny','brianny','montigny-armançon'],
-                      'semur')
-#On modifie la ligne de source 'Pouilly-Auxois':
-c3 = ligne_secondaire(semur_sud_est,
-                      ['posanges','vitteaux','braux','charigny','villeneuve-charigny','st-euphrone'],
-                      'semur')
 
 #Semur sud ouest :
 #On créer une nouvelle ligne de source 'st-Andeux'
-d1 = ligne_secondaire(semur_sud_ouest,
+c1 = ligne_secondaire(semur_sud_ouest,
                      ['st-andeux','rouvray','sincey-rouvray','fremoy','courcelles-fremoy'],
                      'semur')
 #On modifie la ligne de source 'saulieu'
-d2 = ligne_secondaire(semur_sud_ouest,
+c2 = ligne_secondaire(semur_sud_ouest,
                      ['saulieu','vic-thil'],
                      'semur')
 #On supprime les lignes de sources 'Vic-Thil' et 'Arcenay'
 
 
+#Semur sud est :
+#On modifie la ligne de source 'Motte-Ternant':
+d1 = ligne_secondaire(semur_sud_est,
+                      ['motte-ternant','chausseroze','fontagny'],
+                      'semur')
+#On supprime la ligne de source 'Noidan' et on l'utilise pour:
+d2 = ligne_secondaire(semur_sud_est,
+                      ['noidan','clamerey','marcigny','brianny','montigny-armançon'],
+                      'semur')
+#On modifie la ligne de source 'Pouilly-Auxois':
+d3 = ligne_secondaire(semur_sud_est,
+                      ['posanges','vitteaux','braux','charigny','villeneuve-charigny','st-euphrone'],
+                      'semur')
+
+
 
 #On effectue une rétroaction en reprenant le procédé du premier traitement:
+print("\n\n###########Second Traitement###########\n")
 
 #Test semur nord est
 l_ligne = [(18.5, ['montbard', 'crepand', 'montigny-monfort', 'champ-oiseau', 'semur']),
-           (28, ['fresnes', 'fain-les-montbards', 'seigny', 'les-granges', 'grignon', 'lantilly', 'villars', 'semur']),
+           a, #(28, ['fresnes', 'fain-les-montbards', 'seigny', 'les-granges', 'grignon', 'lantilly', 'villars', 'semur']),
            (32.5, ['ampilly', 'gresigny', 'venarey', 'massigny', 'villenotte', 'semur']),
            (36.5, ['laperriere', 'frolois', 'darcey', 'venarey', 'massigny', 'villenotte', 'semur']),
            (35.5, ['verrey', 'gissey', 'venarey', 'massigny', 'villenotte', 'semur']),
            (10.9, ['pouillenay', 'semur'])]
-bus,nouveau_graph_poids = nombre_bus_tot(semur_nord_est_poids,l_ligne)
-eleves_restant,t = test_eleves_restant(nouveau_graph_poids)
-total_eleves = total_eleves_graph(semur_nord_est_poids)
-print(l_ligne)
-print(" ")
-print(bus)
-print(" ")
-print(nouveau_graph_poids)
-print(" ")
-print(eleves_restant,t,total_eleves)
-print(" ")
-print(" ")
+affiche_res(semur_nord_est_poids, l_ligne)
 
 
 #Test semur nord ouest
 l_ligne = [(28.1, ['st-remy', 'quincerot', 'quincy', 'st-germain-senailly', 'senailly', 'viserny', 'villaines-prevotes', 'charentois', 'semur']),
            (23.3, ['st-just', 'fain-moutiers', 'moutiers-st-jean', 'athie', 'viserny', 'villaines-prevotes', 'charentois', 'semur']),
-           (25.3, ['tivauche', 'corsaint', 'monceau', 'corrombles', 'torcy', 'millery', 'semur']),
+           b,#(25.3, ['tivauche', 'corsaint', 'monceau', 'corrombles', 'torcy', 'millery', 'semur']),
            (15.8, ['bard-epoisses', 'jeux-bard', 'genay', 'millery', 'semur']),
            (21.2, ['toutry', 'epoisses', 'changy', 'semur']),
            (24.0, ['vieux-chateau', 'montberthault', 'epoisses', 'changy', 'semur'])]
-bus,nouveau_graph_poids = nombre_bus_tot(semur_nord_ouest_poids,l_ligne)
-eleves_restant,t =test_eleves_restant(nouveau_graph_poids)
-total_eleves = total_eleves_graph(semur_nord_ouest_poids)
-print(l_ligne)
-print(" ")
-print(bus)
-print(" ")
-print(nouveau_graph_poids)
-print(" ")
-print(eleves_restant,t,total_eleves)
-print(" ")
-print(" ")
+affiche_res(semur_nord_ouest_poids, l_ligne)
 
 
 #Test semur sud ouest
 l_ligne = [(18.5, ['forleans', 'foux', 'torcy', 'chassenay', 'cernois', 'semur']),
            (31.5, ['st-germain', 'roche-brenil', 'potenay', 'dompiere', 'grenouilly', 'beauregard', 'ruffey', 'courcelles-semur', 'semur']),
            (36.3, ['chanteau', 'st-didier', 'molphey', 'arcenay', 'juillenay', 'aisy-thil', 'lucenay', 'bierre-semur', 'semur']),
-           (35.8, ['saulieu', 'montlay-auxois', 'juillenay', 'vic-thil', 'aisy-thil', 'lucenay', 'bierre-semur', 'semur']),
-           (32.7, ['st-andeux', 'rouvray', 'sincey-rouvray', 'charmee', 'fremoy', 'courcelles-fremoy', 'bourbilly', 'chassenay', 'cernois', 'semur'])]
-bus,nouveau_graph_poids = nombre_bus_tot(semur_sud_ouest_poids,l_ligne)
-eleves_restant,t =test_eleves_restant(nouveau_graph_poids)
-total_eleves = total_eleves_graph(semur_sud_ouest_poids)
-print(l_ligne)
-print(" ")
-print(bus)
-print(" ")
-print(nouveau_graph_poids)
-print(" ")
-print(eleves_restant,t,total_eleves)
-print(" ")
-print(" ")
+           c2,#(35.8, ['saulieu', 'montlay-auxois', 'juillenay', 'vic-thil', 'aisy-thil', 'lucenay', 'bierre-semur', 'semur']),
+           c1#(32.7, ['st-andeux', 'rouvray', 'sincey-rouvray', 'charmee', 'fremoy', 'courcelles-fremoy', 'bourbilly', 'chassenay', 'cernois', 'semur'])
+           ]
+affiche_res(semur_sud_ouest_poids, l_ligne)
 
 
 #Test semur sud est
 l_ligne = [(21.2, ['arnay-vitteaux', 'marigny', 'chassey', 'magny', 'souhey', 'juilly', 'semur']),
-           (35.6, ['posanges', 'vitteaux', 'st-thibault', 'pont-royal', 'braux', 'charigny', 'villeneuve-charigny', 'st-euphrone', 'massene', 'semur']),
-           (29.0, ['noidan', 'normier', 'clamerey', 'marcigny', 'brianny', 'montigny-armançon', 'flee', 'allerey', 'pont-massene', 'semur']),
-           (32.9, ['motte-ternant', 'chausseroze', 'fontagny', 'chazelle', 'pluvier', 'nan-sous-thil', 'thil', 'roilly', 'flee', 'allerey', 'pont-massene', 'semur'])]
-bus,nouveau_graph_poids = nombre_bus_tot(semur_sud_est_poids,l_ligne)
-eleves_restant,t =test_eleves_restant(nouveau_graph_poids)
-total_eleves = total_eleves_graph(semur_sud_est_poids)
-print(l_ligne)
-print(" ")
-print(bus)
-print(" ")
-print(nouveau_graph_poids)
-print(" ")
-print(eleves_restant,t,total_eleves)
-print(" ")
-print(" ")
+           d3,#(35.6, ['posanges', 'vitteaux', 'st-thibault', 'pont-royal', 'braux', 'charigny', 'villeneuve-charigny', 'st-euphrone', 'massene', 'semur']),
+           d2,#(29.0, ['noidan', 'normier', 'clamerey', 'marcigny', 'brianny', 'montigny-armançon', 'flee', 'allerey', 'pont-massene', 'semur']),
+           d1#(32.9, ['motte-ternant', 'chausseroze', 'fontagny', 'chazelle', 'pluvier', 'nan-sous-thil', 'thil', 'roilly', 'flee', 'allerey', 'pont-massene', 'semur'])
+           ]
+affiche_res(semur_sud_est_poids, l_ligne)
 
 
 #À la suite de ce second traitement, les lignes sont bien plus cohérentes avec la disposition
@@ -721,8 +655,8 @@ def cumul_des_usagers(graph,graph_poids,list_lignes):
 #calcul le graphe des capacités (grâce aux résultats de cumul_des_usagers et nombre_bus_tot)
 def places_libres(bus,graph_flux):
     graph_capa = copy.deepcopy(graph_flux)
-    for triplet in bus:
-        nb_bus,remplissage,ligne = triplet
+    for quad in bus:
+        nb_bus,remplissage,longueur,ligne = quad
         n = len(ligne)
         
         for i in range(0,n-1):
@@ -895,6 +829,8 @@ def chemins(paths,identite):
 #est donc très utile pour connaître les flux maximaux qu'il est possible d'avoir entre deux sommets
 #quelconques du graph.
 
+
+print("#########Exemple de Troisième Traitement#########")
 #exemple:
 bus,graph_oublie = nombre_bus_tot(semur_nord_est_poids,
                     [(18.5, ['montbard', 'crepand', 'montigny-monfort', 'champ-oiseau', 'semur']),
